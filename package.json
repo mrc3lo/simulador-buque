@@ -11,13 +11,14 @@
     "build": "next build",
     "start": "next start",
     "test": "node --test tests/physics.test.mjs",
-    "lint": "eslint . --ignore-pattern .next --ignore-pattern public/p5.min.js"
+    "lint": "eslint . --ignore-pattern .next"
   },
   "dependencies": {
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "^1.31.0",
-    "next": "^16.3.4",
+    "next": "16.2.6",
+    "p5": "^1.11.11",
     "radix-ui": "^1.6.7",
     "react": "19.2.6",
     "react-dom": "19.2.6",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
+    "@types/p5": "^1.7.7",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "eslint": "9.39.4",

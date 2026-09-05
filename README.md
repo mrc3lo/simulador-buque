@@ -20,7 +20,7 @@ Aplicación educativa en React/Next.js para experimentar con flotabilidad, estab
 - **Next.js + React + TypeScript:** interfaz y rutas privadas del servidor.
 - **Supabase Postgres:** salas, participantes, cargas y bitácora.
 - **Vercel:** alojamiento de la aplicación y ejecución de las rutas API.
-- **p5.js:** visualización 3D del buque.
+- **p5.js 1.11:** visualización 3D del buque, instalada desde npm para mantener compatibilidad entre navegadores.
 
 El navegador nunca recibe la `service_role` de Supabase. Todas las escrituras pasan por rutas del servidor que validan la sala, el rol y el token del participante.
 

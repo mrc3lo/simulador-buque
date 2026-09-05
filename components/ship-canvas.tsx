@@ -39,14 +39,10 @@ interface P5Canvas {
   text: (value: string, x: number, y: number) => void;
 }
 
-declare global {
-  interface Window {
-    p5?: new (
-      sketch: (p: P5Canvas) => void,
-      node: HTMLElement,
-    ) => { remove: () => void };
-  }
-}
+type P5Constructor = new (
+  sketch: (p: P5Canvas) => void,
+  node: HTMLElement,
+) => { remove: () => void };
 
 export function ShipCanvas({ metrics }: { metrics: ShipMetrics }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,27 +57,22 @@ export function ShipCanvas({ metrics }: { metrics: ShipMetrics }) {
     let instance: { remove: () => void } | undefined;
     let disposed = false;
 
-    const start = () => {
-      if (disposed || !containerRef.current || !window.p5) return;
-      instance = new window.p5((p) => makeSketch(p, containerRef, metricsRef), containerRef.current);
+    const start = async () => {
+      try {
+        const p5Module = await import("p5");
+        if (disposed || !containerRef.current) return;
+
+        const P5 = p5Module.default as unknown as P5Constructor;
+        instance = new P5(
+          (p) => makeSketch(p, containerRef, metricsRef),
+          containerRef.current,
+        );
+      } catch {
+        if (!disposed) setFailed(true);
+      }
     };
 
-    if (window.p5) {
-      start();
-    } else {
-      const existing = document.querySelector<HTMLScriptElement>(
-        'script[data-p5="ship-simulator"]',
-      );
-      const script = existing ?? document.createElement("script");
-      if (!existing) {
-        script.src = "/p5.min.js";
-        script.async = true;
-        script.dataset.p5 = "ship-simulator";
-        document.head.appendChild(script);
-      }
-      script.addEventListener("load", start, { once: true });
-      script.addEventListener("error", () => setFailed(true), { once: true });
-    }
+    void start();
 
     return () => {
       disposed = true;
