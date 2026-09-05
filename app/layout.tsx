@@ -1,0 +1,24 @@
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "Simulador de Buque | Aula colaborativa",
+  description:
+    "Simulador educativo de flotabilidad, estabilidad y distribución de carga en un buque.",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="es">
+      <body className="antialiased">{children}</body>
+    </html>
+  );
+}
