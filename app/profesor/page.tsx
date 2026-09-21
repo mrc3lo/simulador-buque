@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { DoorOpen, Plus, Radio } from "lucide-react";
+import { TeacherRegistration } from "@/components/teacher-registration";
 import { AccessShell } from "@/components/access-shell";
 import { Classroom } from "@/components/classroom";
 import { Button } from "@/components/ui/button";
@@ -9,13 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createRoom, recoverTeacher, getTeacherAccount, loginTeacher, logoutTeacher } from "@/lib/client-api";
 import { readLocalStorage, writeLocalStorage } from "@/hooks/use-local-storage";
-import type { SessionIdentity } from "@/lib/types";
+import type { SessionIdentity, TeacherAccount } from "@/lib/types";
 
 const SESSION_KEY = "buque:teacher-session";
 
 export default function TeacherPage() {
   const [identity, setIdentity] = useState<SessionIdentity | null>(null);
-  const [account, setAccount] = useState<{ id: string; email: string } | null>(null);
+  const [account, setAccount] = useState<TeacherAccount | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -63,7 +64,7 @@ export default function TeacherPage() {
       description="Crea una nueva sala o recupera una sesión usando su código y PIN."
     >
       <div className="teacher-account">
-        <span>{account.email}</span>
+        <span>{account.email}<br /><small>{account.role === "admin" ? "Administrador" : "Profesor"}</small></span>
         <Button variant="outline" onClick={async () => {
           try { await logoutTeacher(); leave(); setAccount(null); setAuthError(null); }
           catch (error) { setAuthError(error instanceof Error ? error.message : "No se pudo cerrar sesión."); }
@@ -78,6 +79,7 @@ export default function TeacherPage() {
         <TabsContent value="create"><CreateRoomForm onSuccess={saveIdentity} /></TabsContent>
         <TabsContent value="recover"><RecoverRoomForm onSuccess={saveIdentity} /></TabsContent>
       </Tabs>
+      {account.role === "admin" && <TeacherRegistration />}
     </AccessShell>
   );
 }
@@ -147,7 +149,7 @@ function RecoverRoomForm({ onSuccess }: { onSuccess: (identity: SessionIdentity)
 }
 
 function TeacherLoginForm({ onSuccess, message }: {
-  onSuccess: (teacher: { id: string; email: string }) => void;
+  onSuccess: (teacher: TeacherAccount) => void;
   message: string | null;
 }) {
   const [email, setEmail] = useState("");

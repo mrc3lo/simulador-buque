@@ -61,3 +61,9 @@ export interface ActionInput {
   massKg?: number;
   longitudinal?: number;
 }
+
+export interface TeacherAccount {
+  id: string;
+  email: string;
+  role: "teacher" | "admin";
+}

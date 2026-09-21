@@ -93,7 +93,7 @@ El modelo conserva las simplificaciones del prototipo: casco prismático rectang
 El profesor inicia sesión con correo y contraseña antes de crear o recuperar una
 clase. Los alumnos siguen entrando con nombre y código, sin crear una cuenta.
 No existe registro público de profesores. La autorización se comprueba en el
-servidor consultando Supabase Auth y exigiendo `app_metadata.role = "teacher"`.
+servidor consultando Supabase Auth y exigiendo `app_metadata.role` igual a `"teacher"` o `"admin"`.
 La sesión se guarda en una cookie HttpOnly y caduca según el token de Supabase;
 al caducar, el profesor vuelve a iniciar sesión. El PIN de sala sigue siendo
 necesario para recuperar una clase desde otro equipo.
@@ -143,3 +143,18 @@ Referencia: [Supabase Auth](https://supabase.com/docs/guides/auth).
 `npm run lint` revisa el código y `npm test` ejecuta las pruebas físicas.
 Para probar el login y los permisos contra un Supabase simulado, ejecuta
 `npm run build` y luego `npm run test:auth`. Estas pruebas no usan cuentas reales.
+
+## Administradores
+
+Las cuentas con `app_metadata.role = "admin"` pueden iniciar sesión en `/profesor`,
+crear clases y usar **Administración → Registrar profesor**. El formulario crea
+cuentas docentes con correo confirmado y contraseña, sin enviar correos automáticos.
+El administrador entrega las credenciales al profesor por un canal privado.
+El servidor siempre asigna el rol `teacher` desde este formulario: no permite
+crear administradores ni cambiar cuentas existentes. Los profesores y alumnos
+no pueden acceder a esta operación. Los administradores también respetan la
+propiedad de las salas; este rol no concede acceso al panel de Supabase.
+
+El alta inicial de administradores se realiza mediante Supabase Auth Admin API,
+con credenciales del servidor y `app_metadata.role = "admin"`. Las contraseñas y
+claves nunca deben guardarse en código, migraciones ni documentación.

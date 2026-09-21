@@ -16,7 +16,7 @@ test("acceso docente y alumno con la API de producción", { timeout: 30000 }, as
     const body = raw ? JSON.parse(raw) : {};
     const url = new URL(req.url, "http://localhost");
     const token = req.headers.authorization?.replace("Bearer ", "");
-    const user = (key) => ({ id: key === "other" ? "other-teacher" : owner, email: "profesor@example.com", app_metadata: key === "student" ? {} : { role: "teacher" }, user_metadata: { role: "teacher" } });
+    const user = (key) => ({ id: key === "other" ? "other-teacher" : owner, email: "profesor@example.com", app_metadata: key === "student" ? {} : { role: key === "admin" ? "admin" : "teacher" }, user_metadata: { role: "admin" } });
     res.setHeader("Content-Type", "application/json");
     const send = (data, status = 200) => { res.statusCode = status; res.end(JSON.stringify(data)); };
     if (url.pathname === "/auth/v1/token") {
@@ -26,6 +26,11 @@ test("acceso docente y alumno con la API de producción", { timeout: 30000 }, as
     if (url.pathname === "/auth/v1/user") return token === "expired" ? send({}, 401) : send(user(token));
     if (url.pathname === "/auth/v1/logout") return send({});
     if (req.method !== "GET") writes.push({ path: url.pathname, body });
+    if (url.pathname === "/auth/v1/admin/users") {
+      assert.equal(token, "test-key");
+      if (body.email === "existing@example.com") return send({ code: "email_exists" }, 422);
+      return send({ id: "new-teacher", email: body.email, app_metadata: body.app_metadata });
+    }
     if (url.pathname === "/rest/v1/rooms") {
       if (req.method === "POST") return send([{ ...room, ...body }]);
       return send(url.searchParams.get("code") === "eq.ABC234" ? [room] : []);
@@ -100,6 +105,28 @@ test("acceso docente y alumno con la API de producción", { timeout: 30000 }, as
     assert.equal((await call("/api/rooms/ABC234/join", { body: { displayName: "Alumno" } })).status, 201);
     assert.equal((await call("/api/rooms/ABC234/actions", { body: { type: "add", token: "student-token", side: "port", massKg: 30000, longitudinal: 0 } })).status, 200);
     assert.equal((await call("/api/rooms/ABC234/actions", { body: { type: "reset", token: "student-token" } })).status, 403);
+  });
+  await t.test("administradores acceden y registran profesores sin permitir elevar el rol", async () => {
+    const login = await call("/api/auth/teacher", { body: { email: "admin@example.com", password: "admin" } });
+    assert.equal(login.status, 200);
+    assert.equal((await login.json()).teacher.role, "admin");
+    const cookie = "maritime-teacher-session=admin";
+    assert.equal((await call("/api/rooms", { cookie, body: { title: "Clase admin", teacherName: "Admin", pin: "1234" } })).status, 201);
+    const result = await call("/api/admin/teachers", { cookie, body: { name: "Docente", email: "NEW@example.com", password: "test-password", role: "admin", app_metadata: { role: "admin" } } });
+    assert.equal(result.status, 201);
+    assert.deepEqual(await result.json(), { teacher: { id: "new-teacher", email: "new@example.com", role: "teacher" } });
+    assert.equal(writes.find((entry) => entry.path === "/auth/v1/admin/users").body.app_metadata.role, "teacher");
+    assert.equal((await call("/api/admin/teachers", { cookie, body: { name: "Docente", email: "existing@example.com", password: "test-password" } })).status, 409);
+    assert.equal((await call("/api/admin/teachers", { cookie, body: { name: "Docente", email: "bad-email", password: "test-password" } })).status, 400);
+    assert.equal((await call("/api/admin/teachers", { cookie, body: { name: "Docente", email: "valid@example.com", password: "short" } })).status, 400);
+  });
+  await t.test("solo administradores pueden crear cuentas, con validación de origen", async () => {
+    const count = writes.length;
+    assert.equal((await call("/api/admin/teachers")).status, 401);
+    assert.equal((await call("/api/admin/teachers", { cookie: teacherCookie })).status, 403);
+    assert.equal((await call("/api/admin/teachers", { cookie: "maritime-teacher-session=student" })).status, 403);
+    assert.equal((await call("/api/admin/teachers", { cookie: "maritime-teacher-session=admin", originHeader: "https://otro.example" })).status, 403);
+    assert.equal(writes.length, count);
   });
   await t.test("cerrar sesión elimina la cookie", async () => {
     const result = await call("/api/auth/teacher", { method: "DELETE", cookie: teacherCookie });

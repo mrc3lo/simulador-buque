@@ -324,3 +324,5 @@ a { color: inherit; text-decoration: none; }
   .brand-lockup strong { font-size: .85rem; }
   .classroom-header { gap: .65rem; }
 }
+.teacher-registration { border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 2rem; }
+.teacher-registration h2 { margin-block: .5rem; font-size: 1.3rem; }

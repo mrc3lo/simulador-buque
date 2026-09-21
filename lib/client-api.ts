@@ -1,6 +1,6 @@
 "use client";
 
-import type { ActionInput, RoomState, SessionIdentity } from "@/lib/types";
+import type { ActionInput, RoomState, SessionIdentity, TeacherAccount } from "@/lib/types";
 
 async function jsonRequest<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, {
@@ -74,13 +74,19 @@ export async function heartbeat(identity: SessionIdentity) {
 }
 
 export function getTeacherAccount() {
-  return jsonRequest<{ teacher: { id: string; email: string } }>("/api/auth/teacher");
+  return jsonRequest<{ teacher: TeacherAccount }>("/api/auth/teacher");
 }
 export function loginTeacher(email: string, password: string) {
-  return jsonRequest<{ teacher: { id: string; email: string } }>("/api/auth/teacher", {
+  return jsonRequest<{ teacher: TeacherAccount }>("/api/auth/teacher", {
     method: "POST", body: JSON.stringify({ email, password }),
   });
 }
 export function logoutTeacher() {
   return jsonRequest<{ ok: true }>("/api/auth/teacher", { method: "DELETE" });
+}
+
+export function registerTeacher(input: { name: string; email: string; password: string }) {
+  return jsonRequest<{ teacher: TeacherAccount }>("/api/admin/teachers", {
+    method: "POST", body: JSON.stringify(input),
+  });
 }

@@ -1,3 +1,4 @@
+import type { TeacherAccount } from "@/lib/types";
 import { cookies } from "next/headers";
 import { getServerConfig } from "@/lib/server-config";
 
@@ -5,14 +6,13 @@ export const TEACHER_COOKIE = "maritime-teacher-session";
 export class AuthError extends Error {
   constructor(message: string, public status = 401) { super(message); }
 }
-export interface TeacherAccount { id: string; email: string }
 interface AuthUser { id: string; email?: string; app_metadata?: { role?: string } }
 
 export function assertTeacher(user: AuthUser): TeacherAccount {
-  if (!user.id || !user.email || user.app_metadata?.role !== "teacher") {
+  if (!user.id || !user.email || !["teacher", "admin"].includes(user.app_metadata?.role ?? "")) {
     throw new AuthError("Esta cuenta no tiene acceso docente. Contacta al administrador.", 403);
   }
-  return { id: user.id, email: user.email };
+  return { id: user.id, email: user.email, role: user.app_metadata!.role as TeacherAccount["role"] };
 }
 
 export async function authRequest(path: string, init: RequestInit = {}) {
@@ -56,4 +56,10 @@ export async function requireRoomTeacher(request: Request, ownerId: string | nul
   const teacher = await requireTeacher();
   if (ownerId && teacher.id !== ownerId) throw new AuthError("Esta clase pertenece a otro profesor.", 403);
   return teacher;
+}
+
+export async function requireAdministrator() {
+  const account = await requireTeacher();
+  if (account.role !== "admin") throw new AuthError("Solo los administradores pueden registrar profesores.", 403);
+  return account;
 }
