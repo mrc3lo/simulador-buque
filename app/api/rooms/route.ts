@@ -3,6 +3,8 @@ import { apiError, badRequest } from "@/lib/api-response";
 import { hashTeacherPin } from "@/lib/server-config";
 import { eq, supabaseRequest } from "@/lib/supabase-rest";
 
+import { requireRoomTeacher } from "@/lib/teacher-auth";
+
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 function makeRoomCode() {
@@ -12,6 +14,7 @@ function makeRoomCode() {
 
 export async function POST(request: Request) {
   try {
+    const account = await requireRoomTeacher(request, null);
     const body = (await request.json()) as {
       title?: string;
       teacherName?: string;
@@ -58,6 +61,7 @@ export async function POST(request: Request) {
         code,
         title,
         teacher_name: teacherName,
+        teacher_user_id: account.id,
         teacher_pin_hash: pinHash,
       }),
     });

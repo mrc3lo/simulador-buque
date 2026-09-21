@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Simulador de Buque | Aula colaborativa",
+  title: "Laboratorio Logística Marítima y Portuaria",
   description:
     "Simulador educativo de flotabilidad, estabilidad y distribución de carga en un buque.",
   icons: {

@@ -311,3 +311,16 @@ a { color: inherit; text-decoration: none; }
   .home-intro h1 { font-size: 2.7rem; }
   .role-card { padding: 1.35rem; }
 }
+
+/* El nombre institucional debe seguir siendo legible en pantallas pequeñas. */
+.brand-lockup { min-width: 0; }
+.brand-lockup > div { min-width: 0; }
+.brand-lockup strong { max-width: 28rem; line-height: 1.3; text-wrap: balance; }
+.brand-mark, .access-brand svg { flex-shrink: 0; }
+.header-actions { flex-shrink: 0; }
+.teacher-account { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-block: 1.5rem; flex-wrap: wrap; }
+.teacher-account span { overflow-wrap: anywhere; min-width: 0; }
+@media (max-width: 720px) {
+  .brand-lockup strong { font-size: .85rem; }
+  .classroom-header { gap: .65rem; }
+}

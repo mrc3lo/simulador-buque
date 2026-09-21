@@ -15,7 +15,7 @@ export default function Home() {
       <header className="home-header">
         <div className="brand-lockup light">
           <span className="brand-mark"><span /></span>
-          <div><span className="eyebrow">Laboratorio naval</span><strong>Simulador de Buque</strong></div>
+          <div><span className="eyebrow">Simulador de buque</span><strong>Laboratorio Logística Marítima y Portuaria</strong></div>
         </div>
         <span className="home-status"><Radio /> Aula colaborativa</span>
       </header>
@@ -34,7 +34,7 @@ export default function Home() {
             <span className="role-icon"><GraduationCap /></span>
             <span className="eyebrow">Docente</span>
             <h2>Crear o recuperar una sala</h2>
-            <p>Inicia un ejercicio, comparte el código y observa el trabajo del curso.</p>
+            <p>Inicia sesión como profesor, crea una clase y comparte el código con tus alumnos.</p>
             <strong>Entrar como profesor <ArrowRight /></strong>
           </Link>
           <Link href="/alumno" className="role-card student">

@@ -3,10 +3,13 @@ import { apiError, badRequest } from "@/lib/api-response";
 import { hashTeacherPin } from "@/lib/server-config";
 import { eq, supabaseRequest } from "@/lib/supabase-rest";
 
+import { requireRoomTeacher, AuthError } from "@/lib/teacher-auth";
+
 type Context = { params: Promise<{ code: string }> };
 
 export async function POST(request: Request, context: Context) {
   try {
+    const account = await requireRoomTeacher(request, null);
     const { code: rawCode } = await context.params;
     const code = rawCode.toUpperCase();
     const body = (await request.json()) as { pin?: string };
@@ -19,11 +22,13 @@ export async function POST(request: Request, context: Context) {
         code: string;
         teacher_pin_hash: string;
         teacher_name: string;
+        teacher_user_id: string | null;
       }>
     >(
-      `rooms?code=${eq(code)}&select=id,code,teacher_pin_hash,teacher_name&limit=1`,
+      `rooms?code=${eq(code)}&select=*&limit=1`,
     );
     if (!room) return badRequest("La sala no existe.", 404);
+    if (room.teacher_user_id && room.teacher_user_id !== account.id) throw new AuthError("Esta clase pertenece a otro profesor.", 403);
     if ((await hashTeacherPin(code, pin)) !== room.teacher_pin_hash) {
       return badRequest("El PIN no es correcto.", 401);
     }

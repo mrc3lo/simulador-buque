@@ -17,7 +17,7 @@ export function AccessShell({
       <div className="access-backdrop" aria-hidden="true"><span /><span /><span /></div>
       <section className="access-panel">
         <Link href="/" className="back-link"><ArrowLeft /> Inicio</Link>
-        <div className="access-brand"><Anchor /><span>Laboratorio naval</span></div>
+        <div className="access-brand"><Anchor /><span>Laboratorio Logística Marítima y Portuaria</span></div>
         <span className="eyebrow">{role}</span>
         <h1>{title}</h1>
         <p>{description}</p>

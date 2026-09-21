@@ -3,6 +3,8 @@ import { apiError, badRequest } from "@/lib/api-response";
 import { eq, supabaseRequest } from "@/lib/supabase-rest";
 import type { ActionInput, Side } from "@/lib/types";
 
+import { requireRoomTeacher } from "@/lib/teacher-auth";
+
 type Context = { params: Promise<{ code: string }> };
 
 export async function POST(request: Request, context: Context) {
@@ -13,8 +15,8 @@ export async function POST(request: Request, context: Context) {
     if (!body.token) return badRequest("Sesión no identificada.", 401);
 
     const [room] = await supabaseRequest<
-      Array<{ id: string; status: "active" | "closed" }>
-    >(`rooms?code=${eq(code)}&select=id,status&limit=1`);
+      Array<{ id: string; status: "active" | "closed"; teacher_user_id: string | null }>
+    >(`rooms?code=${eq(code)}&select=*&limit=1`);
     if (!room) return badRequest("La sala no existe.", 404);
     if (room.status !== "active") return badRequest("La sala está cerrada.", 409);
 
@@ -28,6 +30,8 @@ export async function POST(request: Request, context: Context) {
       `participants?room_id=${eq(room.id)}&token=${eq(body.token)}&select=id,display_name,role&limit=1`,
     );
     if (!actor) return badRequest("La sesión ya no es válida.", 401);
+
+    if (actor.role === "teacher") await requireRoomTeacher(request, room.teacher_user_id);
 
     if (body.type === "add") {
       const allowedSides: Side[] = ["port", "starboard"];

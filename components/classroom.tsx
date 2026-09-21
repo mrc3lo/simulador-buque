@@ -47,8 +47,8 @@ export function Classroom({
         <div className="brand-lockup">
           <span className="brand-mark"><span /></span>
           <div>
-            <span className="eyebrow">Laboratorio naval</span>
-            <strong>Simulador de Buque</strong>
+            <span className="eyebrow">Simulador de buque</span>
+            <strong>Laboratorio Logística Marítima y Portuaria</strong>
           </div>
         </div>
         <div className="header-actions">

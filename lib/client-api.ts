@@ -9,8 +9,12 @@ async function jsonRequest<T>(url: string, init?: RequestInit): Promise<T> {
   });
   const payload = (await response.json().catch(() => ({}))) as {
     error?: string;
+    code?: string;
   } & T;
-  if (!response.ok) throw new Error(payload.error || "La operación no pudo completarse.");
+  if (!response.ok) {
+    if (response.status === 401 && payload.code === "TEACHER_AUTH" && !url.startsWith("/api/auth/")) window.dispatchEvent(new Event("teacher-session-expired"));
+    throw new Error(payload.error || "La operación no pudo completarse.");
+  }
   return payload;
 }
 
@@ -67,4 +71,16 @@ export async function heartbeat(identity: SessionIdentity) {
     `/api/rooms/${encodeURIComponent(identity.roomCode)}/heartbeat`,
     { method: "POST", body: JSON.stringify({ token: identity.token }) },
   );
+}
+
+export function getTeacherAccount() {
+  return jsonRequest<{ teacher: { id: string; email: string } }>("/api/auth/teacher");
+}
+export function loginTeacher(email: string, password: string) {
+  return jsonRequest<{ teacher: { id: string; email: string } }>("/api/auth/teacher", {
+    method: "POST", body: JSON.stringify({ email, password }),
+  });
+}
+export function logoutTeacher() {
+  return jsonRequest<{ ok: true }>("/api/auth/teacher", { method: "DELETE" });
 }

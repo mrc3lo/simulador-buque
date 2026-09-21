@@ -1,4 +1,4 @@
-# Simulador colaborativo de buque
+# Laboratorio Logística Marítima y Portuaria
 
 Aplicación educativa en React/Next.js para experimentar con flotabilidad, estabilidad y distribución de carga. El profesor crea una sala, comparte un código y los alumnos ingresan con su nombre desde cualquier dispositivo.
 
@@ -78,7 +78,7 @@ El archivo `.gitignore` evita que `.env.local` y las claves secretas se suban al
 
 ## Uso en clases
 
-1. El profesor entra a `/profesor`, crea una sala y guarda su PIN.
+1. El profesor entra a `/profesor`, inicia sesión con su cuenta habilitada, crea una sala y guarda su PIN.
 2. Comparte el enlace o el código visible en pantalla.
 3. Cada estudiante entra a `/alumno`, escribe su nombre y se conecta.
 4. El curso agrega cargas y observa cómo cambian los parámetros navales.
@@ -87,3 +87,59 @@ El archivo `.gitignore` evita que `.env.local` y las claves secretas se suban al
 ## Consideración física
 
 El modelo conserva las simplificaciones del prototipo: casco prismático rectangular, densidad constante de agua de mar de 1025 kg/m³ y posiciones discretas de carga. Es una herramienta didáctica; no sustituye software de cálculo o certificación naval.
+
+## Acceso de profesores
+
+El profesor inicia sesión con correo y contraseña antes de crear o recuperar una
+clase. Los alumnos siguen entrando con nombre y código, sin crear una cuenta.
+No existe registro público de profesores. La autorización se comprueba en el
+servidor consultando Supabase Auth y exigiendo `app_metadata.role = "teacher"`.
+La sesión se guarda en una cookie HttpOnly y caduca según el token de Supabase;
+al caducar, el profesor vuelve a iniciar sesión. El PIN de sala sigue siendo
+necesario para recuperar una clase desde otro equipo.
+
+### Actualizar una instalación existente (antes de desplegar)
+
+Ejecuta en Supabase > SQL Editor:
+
+```sql
+alter table public.rooms
+  add column if not exists teacher_user_id uuid references auth.users(id);
+```
+
+1. En Supabase > Authentication > Users, crea la cuenta del profesor con correo
+   y contraseña (correo confirmado). Entrega la contraseña por un canal privado.
+2. Habilita su rol con esta consulta, sustituyendo el correo:
+
+```sql
+update auth.users
+set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb)
+  || '{"role":"teacher"}'::jsonb
+where email = 'profesor@tu-institucion.cl';
+```
+
+3. Verifica que la consulta haya afectado la cuenta correcta. Solo las cuentas
+   con este rol podrán crear clases, aunque otras personas se registren en Auth.
+4. Publica en Vercel usando las variables de entorno existentes. No necesitas
+   agregar claves públicas ni exponer `SUPABASE_SERVICE_ROLE_KEY` al navegador.
+
+Las clases nuevas quedan asociadas a la cuenta que las creó. Para asociar una
+clase anterior a un profesor, ejecuta (sustituye correo y código):
+
+```sql
+update public.rooms
+set teacher_user_id = (select id from auth.users where email = 'profesor@tu-institucion.cl')
+where code = 'ABC234';
+```
+
+Las salas anteriores sin propietario requieren una cuenta docente habilitada y
+su PIN para recuperarlas. El administrador gestiona altas, recuperación de
+contraseñas y revocación del rol docente en Supabase.
+
+Referencia: [Supabase Auth](https://supabase.com/docs/guides/auth).
+
+## Verificación
+
+`npm run lint` revisa el código y `npm test` ejecuta las pruebas físicas.
+Para probar el login y los permisos contra un Supabase simulado, ejecuta
+`npm run build` y luego `npm run test:auth`. Estas pruebas no usan cuentas reales.

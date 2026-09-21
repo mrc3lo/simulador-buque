@@ -7,6 +7,7 @@ create table if not exists public.rooms (
   title text not null check (char_length(title) between 1 and 80),
   teacher_name text not null check (char_length(teacher_name) between 1 and 60),
   teacher_pin_hash text not null,
+  teacher_user_id uuid references auth.users(id),
   status text not null default 'active' check (status in ('active', 'closed')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -80,3 +81,6 @@ drop trigger if exists rooms_touch_updated_at on public.rooms;
 create trigger rooms_touch_updated_at
 before update on public.rooms
 for each row execute function public.touch_room_updated_at();
+
+-- Actualización compatible con salas existentes.
+alter table public.rooms add column if not exists teacher_user_id uuid references auth.users(id);

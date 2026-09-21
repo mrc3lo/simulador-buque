@@ -7,7 +7,7 @@ import { Classroom } from "@/components/classroom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { createRoom, recoverTeacher } from "@/lib/client-api";
+import { createRoom, recoverTeacher, getTeacherAccount, loginTeacher, logoutTeacher } from "@/lib/client-api";
 import { readLocalStorage, writeLocalStorage } from "@/hooks/use-local-storage";
 import type { SessionIdentity } from "@/lib/types";
 
@@ -15,23 +15,45 @@ const SESSION_KEY = "buque:teacher-session";
 
 export default function TeacherPage() {
   const [identity, setIdentity] = useState<SessionIdentity | null>(null);
+  const [account, setAccount] = useState<{ id: string; email: string } | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setIdentity(readLocalStorage<SessionIdentity>(SESSION_KEY));
-    setReady(true);
+    let active = true;
+    void getTeacherAccount().then(({ teacher }) => {
+      if (!active) return;
+      setAccount(teacher);
+      setIdentity(readLocalStorage<SessionIdentity>(`${SESSION_KEY}:${teacher.id}`));
+    }).catch(() => {}).finally(() => { if (active) setReady(true); });
+    const expired = () => {
+      setAccount(null);
+      setIdentity(null);
+      setAuthError("Vuelve a iniciar sesión para continuar como profesor.");
+    };
+    window.addEventListener("teacher-session-expired", expired);
+    return () => { active = false; window.removeEventListener("teacher-session-expired", expired); };
   }, []);
 
   const saveIdentity = (next: SessionIdentity) => {
-    writeLocalStorage(SESSION_KEY, next);
+    writeLocalStorage(`${SESSION_KEY}:${account?.id}`, next);
     setIdentity(next);
   };
   const leave = () => {
-    window.localStorage.removeItem(SESSION_KEY);
+    window.localStorage.removeItem(`${SESSION_KEY}:${account?.id}`);
     setIdentity(null);
   };
 
   if (!ready) return <div className="loading-screen"><span /></div>;
+  if (!account) return (
+    <AccessShell role="Acceso docente" title="Inicia sesión como profesor" description="Usa la cuenta habilitada por el administrador para crear y dirigir tus clases.">
+      <TeacherLoginForm message={authError} onSuccess={(teacher) => {
+        setAccount(teacher);
+        setAuthError(null);
+        setIdentity(readLocalStorage<SessionIdentity>(`${SESSION_KEY}:${teacher.id}`));
+      }} />
+    </AccessShell>
+  );
   if (identity) return <Classroom identity={identity} onLeave={leave} />;
 
   return (
@@ -40,6 +62,14 @@ export default function TeacherPage() {
       title="Prepara el laboratorio"
       description="Crea una nueva sala o recupera una sesión usando su código y PIN."
     >
+      <div className="teacher-account">
+        <span>{account.email}</span>
+        <Button variant="outline" onClick={async () => {
+          try { await logoutTeacher(); leave(); setAccount(null); setAuthError(null); }
+          catch (error) { setAuthError(error instanceof Error ? error.message : "No se pudo cerrar sesión."); }
+        }}>Cerrar sesión</Button>
+      </div>
+      {authError && <p className="form-error" role="alert">{authError}</p>}
       <Tabs defaultValue="create" className="access-tabs">
         <TabsList className="tabs-full">
           <TabsTrigger value="create"><Plus /> Nueva sala</TabsTrigger>
@@ -112,6 +142,32 @@ function RecoverRoomForm({ onSuccess }: { onSuccess: (identity: SessionIdentity)
       <Button size="lg" className="access-submit" disabled={busy}>
         {busy ? "Verificando…" : <><DoorOpen /> Recuperar sala</>}
       </Button>
+    </form>
+  );
+}
+
+function TeacherLoginForm({ onSuccess, message }: {
+  onSuccess: (teacher: { id: string; email: string }) => void;
+  message: string | null;
+}) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setBusy(true); setError(null);
+    try { onSuccess((await loginTeacher(email, password)).teacher); }
+    catch (caught) { setError(caught instanceof Error ? caught.message : "No se pudo iniciar sesión."); }
+    finally { setBusy(false); }
+  };
+  return (
+    <form className="access-form standalone" onSubmit={submit}>
+      <label><span>Correo del profesor</span><Input type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} maxLength={254} required /></label>
+      <label><span>Contraseña</span><Input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} maxLength={1024} required /></label>
+      {(error || message) && <p className="form-error" role="alert">{error || message}</p>}
+      <Button size="lg" className="access-submit" disabled={busy}>{busy ? "Ingresando…" : "Iniciar sesión"}</Button>
+      <p className="form-help">Si no tienes cuenta o necesitas recuperar tu contraseña, contacta al administrador. Los alumnos ingresan desde «Entrar como alumno» con su nombre y código de clase.</p>
     </form>
   );
 }
