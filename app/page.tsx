@@ -49,7 +49,7 @@ export default function Home() {
 
       <footer className="home-footer">
         <span><ShieldCheck /> Tu identidad de aula queda guardada en este dispositivo.</span>
-        <span>Diseñado para clases de estabilidad naval</span>
+        <span>Diseñado para clases de Logística Marítima Portuaria</span>
       </footer>
     </main>
   );
