@@ -90,3 +90,13 @@ export function registerTeacher(input: { name: string; email: string; password: 
     method: "POST", body: JSON.stringify(input),
   });
 }
+
+export function listTeachers() {
+  return jsonRequest<{ teachers: Array<{ id: string; email: string; name: string }> }>("/api/admin/teachers");
+}
+
+export function deleteTeacher(id: string) {
+  return jsonRequest<{ ok: true }>("/api/admin/teachers", {
+    method: "DELETE", body: JSON.stringify({ id }),
+  });
+}

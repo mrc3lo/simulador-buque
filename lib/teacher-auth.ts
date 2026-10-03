@@ -60,6 +60,6 @@ export async function requireRoomTeacher(request: Request, ownerId: string | nul
 
 export async function requireAdministrator() {
   const account = await requireTeacher();
-  if (account.role !== "admin") throw new AuthError("Solo los administradores pueden registrar profesores.", 403);
+  if (account.role !== "admin") throw new AuthError("Solo los administradores pueden gestionar cuentas de profesores.", 403);
   return account;
 }

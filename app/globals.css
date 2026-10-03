@@ -214,6 +214,10 @@ a { color: inherit; text-decoration: none; }
 .technical-details dl div { display: flex; justify-content: space-between; gap: 1rem; font-size: .72rem; }
 .technical-details dt { color: #71858c; }
 .technical-details dd { margin: 0; font-weight: 750; }
+.parameter-legend { margin-top: .9rem; padding-top: .75rem; border-top: 1px solid #dde7e9; }
+.parameter-legend h3 { margin: 0 0 .5rem; color: #264b58; font-size: .76rem; }
+.parameter-legend ul { display: grid; gap: .38rem; margin: 0; padding-left: 1rem; font-size: .7rem; line-height: 1.45; }
+.parameter-legend strong { color: #264b58; }
 .workspace-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); gap: 1rem; max-width: 1440px; margin: 1rem auto; align-items: start; }
 .control-card, .participants-card, .activity-card { padding: 1.2rem; }
 .section-heading { display: flex; justify-content: space-between; align-items: center; }
@@ -326,3 +330,12 @@ a { color: inherit; text-decoration: none; }
 }
 .teacher-registration { border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 2rem; }
 .teacher-registration h2 { margin-block: .5rem; font-size: 1.3rem; }
+.managed-teachers { margin-top: 1.8rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+.managed-teachers-heading { display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
+.managed-teachers-heading h3 { margin: 0; font-size: 1rem; }
+.managed-teachers > p { color: #63767d; font-size: .82rem; }
+.managed-teachers-list { display: grid; gap: .55rem; margin: .8rem 0 0; padding: 0; list-style: none; }
+.managed-teachers-list li { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .75rem; border: 1px solid var(--border); border-radius: .7rem; }
+.managed-teachers-list li > span { display: grid; min-width: 0; gap: .2rem; overflow-wrap: anywhere; }
+.managed-teachers-list strong { color: #264b58; font-size: .86rem; }
+.managed-teachers-list small { color: #63767d; font-size: .76rem; }

@@ -33,16 +33,33 @@ export function MetricsPanel({ metrics }: { metrics: ShipMetrics }) {
       </div>
 
       <details className="technical-details">
-        <summary>Ver parámetros navales</summary>
+        <summary>Parámetros de Flotabilidad y Estabilidad</summary>
         <dl>
-          <div><dt>Volumen desplazado</dt><dd>{metrics.displacedVolumeM3.toFixed(2)} m³</dd></div>
+          <div><dt>Desplazamiento (Δ)</dt><dd>{tons(metrics.totalMassKg)}</dd></div>
+          <div><dt>Volumen desplazado (∇)</dt><dd>{metrics.displacedVolumeM3.toFixed(2)} m³</dd></div>
+          <div><dt>Calado (T)</dt><dd>{metrics.draftM.toFixed(2)} m</dd></div>
           <div><dt>KG</dt><dd>{metrics.kgM.toFixed(2)} m</dd></div>
           <div><dt>KB</dt><dd>{metrics.kbM.toFixed(2)} m</dd></div>
           <div><dt>BM</dt><dd>{metrics.bmM.toFixed(2)} m</dd></div>
           <div><dt>KM</dt><dd>{metrics.kmM.toFixed(2)} m</dd></div>
-          <div><dt>G transversal</dt><dd>{metrics.transverseGM.toFixed(2)} m</dd></div>
+          <div><dt>GM</dt><dd>{metrics.gmM.toFixed(2)} m</dd></div>
+          <div><dt>G transversal (yG)</dt><dd>{metrics.transverseGM.toFixed(2)} m</dd></div>
           <div><dt>Momento escorante</dt><dd>{(metrics.heelingMomentKgM / 1000).toFixed(1)} t·m</dd></div>
         </dl>
+        <div className="parameter-legend">
+          <h3>Leyenda de variables</h3>
+          <ul>
+            <li><strong>Δ:</strong> desplazamiento, masa total equivalente al agua desplazada.</li>
+            <li><strong>∇:</strong> volumen de agua desplazado por el casco.</li>
+            <li><strong>T:</strong> calado, distancia de la quilla a la línea de flotación.</li>
+            <li><strong>KG:</strong> altura del centro de gravedad sobre la quilla.</li>
+            <li><strong>KB:</strong> altura del centro de carena o flotabilidad sobre la quilla.</li>
+            <li><strong>BM:</strong> distancia del centro de carena al metacentro.</li>
+            <li><strong>KM:</strong> altura del metacentro sobre la quilla (KB + BM).</li>
+            <li><strong>GM:</strong> altura metacéntrica (KM − KG); indica la estabilidad inicial.</li>
+            <li><strong>yG:</strong> desplazamiento transversal del centro de gravedad desde la línea central.</li>
+          </ul>
+        </div>
       </details>
     </section>
   );
