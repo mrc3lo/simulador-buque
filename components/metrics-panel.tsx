@@ -2,6 +2,14 @@ import { Activity, Anchor, Gauge, Scale, Waves } from "lucide-react";
 import { SHIP, type ShipMetrics } from "@/lib/physics";
 
 const tons = (kg: number) => `${(kg / 1000).toFixed(1)} t`;
+const cargoSlots = [
+  { label: "Popa · Babor", longitudinal: -10, side: "port" },
+  { label: "Popa · Estribor", longitudinal: -10, side: "starboard" },
+  { label: "Centro · Babor", longitudinal: 0, side: "port" },
+  { label: "Centro · Estribor", longitudinal: 0, side: "starboard" },
+  { label: "Proa · Babor", longitudinal: 10, side: "port" },
+  { label: "Proa · Estribor", longitudinal: 10, side: "starboard" },
+] as const;
 
 export function MetricsPanel({ metrics }: { metrics: ShipMetrics }) {
   const metricsList = [
@@ -53,6 +61,16 @@ export function MetricsPanel({ metrics }: { metrics: ShipMetrics }) {
           <div><dt>GM</dt><dd>{metrics.gmM.toFixed(2)} m</dd></div>
           <div><dt>G transversal (yG)</dt><dd>{metrics.transverseGM.toFixed(2)} m</dd></div>
           <div><dt>Momento escorante</dt><dd>{(metrics.heelingMomentKgM / 1000).toFixed(1)} t·m</dd></div>
+        </dl>
+        <h3 className="load-distribution-title">Distribución de la carga</h3>
+        <dl className="load-distribution">
+          {cargoSlots.map(({ label, longitudinal, side }) => {
+            const massKg = metrics.positionedLoads.reduce(
+              (total, load) => total + (load.longitudinal === longitudinal && load.side === side ? load.massKg : 0),
+              0,
+            );
+            return <div key={label}><dt>{label}</dt><dd>{tons(massKg)}</dd></div>;
+          })}
         </dl>
         <div className="parameter-legend">
           <h3>Leyenda de variables</h3>
