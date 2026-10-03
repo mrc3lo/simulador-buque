@@ -18,7 +18,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <div className="app-content">{children}</div>
+        <footer className="app-credit">
+          Esta app ha sido creada, diseñada e implementada por Rodolfo Díaz Guerra y Marcelo Díaz Flores.
+        </footer>
+      </body>
     </html>
   );
 }
