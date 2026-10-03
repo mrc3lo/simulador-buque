@@ -165,7 +165,7 @@ a { color: inherit; text-decoration: none; }
 .loading-screen span { width: 2rem; height: 2rem; border: 3px solid #ffffff33; border-top-color: var(--cyan-300); border-radius: 50%; animation: spin 1s linear infinite; }
 
 /* Classroom */
-.classroom-shell { min-height: 100svh; padding: 0 clamp(1rem, 3vw, 2.5rem) 2rem; background: #eaf2f4; }
+.classroom-shell { min-height: calc(100svh - 3.2rem); padding: 0 clamp(1rem, 3vw, 2.5rem) 2rem; background: #eaf2f4; }
 .classroom-header { display: flex; align-items: center; justify-content: space-between; min-height: 4.5rem; max-width: 1440px; margin: auto; border-bottom: 1px solid #cfdee2; }
 .header-actions { display: flex; align-items: center; gap: .5rem; }
 .connection-badge { display: inline-flex; align-items: center; gap: .42rem; padding: .45rem .7rem; border-radius: 99px; background: #dfe9ec; color: #60737b; font-size: .76rem; font-weight: 800; }
@@ -184,9 +184,9 @@ a { color: inherit; text-decoration: none; }
 .room-notice svg { width: 1rem; }
 .room-notice.closed { background: #e1e7ea; color: #455d66; }
 .room-notice.warning { background: #fff3d5; color: #7a5911; }
-.simulator-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(280px, .65fr); gap: 1rem; max-width: 1440px; margin: auto; }
+.simulator-grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 1rem; max-width: 1440px; margin: auto; }
 .simulation-card, .metrics-panel, .control-card, .participants-card, .activity-card, .teacher-actions { border: 1px solid #cfdee2; border-radius: 1.15rem; background: white; box-shadow: 0 8px 30px #1637450a; }
-.simulation-card { min-width: 0; overflow: hidden; background: var(--navy-950); }
+.simulation-card { width: min(100%, 1100px); min-width: 0; margin-inline: auto; overflow: hidden; background: var(--navy-950); }
 .simulation-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .7rem 1rem; border-bottom: 1px solid #ffffff17; color: #b8ced5; font-size: .77rem; font-weight: 700; }
 .simulation-toolbar > div:first-child { display: flex; align-items: center; gap: .45rem; }
 .live-indicator { width: .5rem; height: .5rem; border-radius: 50%; background: #2fd4ac; box-shadow: 0 0 0 4px #2fd4ac18; }
@@ -211,23 +211,24 @@ a { color: inherit; text-decoration: none; }
 .buoyancy-status.is-floating { background: #c9eadb; color: #145b48; }
 .buoyancy-status.is-sinking { background: #f8d4d1; color: #8c2521; }
 .buoyancy-status small { margin-top: .12rem; font-size: .68rem; }
-.metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; }
+.metric-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .55rem; }
 .metric-card { display: grid; grid-template-columns: auto 1fr; gap: .1rem .5rem; padding: .75rem; border: 1px solid #dae5e8; border-radius: .75rem; background: #f8fbfb; }
-.metric-card:last-child { grid-column: 1 / -1; }
+.metric-card:last-child { grid-column: auto; }
 .metric-card svg { grid-row: 1 / 3; width: 1rem; align-self: center; color: #2a8398; }
 .metric-card span { color: #6d7e84; font-size: .7rem; }
 .metric-card strong { font-size: 1rem; }
 .technical-details { margin-top: auto; padding: .7rem .8rem; border-top: 1px solid #dde7e9; color: #53676f; }
 .technical-details summary { color: #264b58; font-size: .78rem; font-weight: 800; cursor: pointer; }
 .technical-details dl { display: grid; gap: .45rem; margin: .75rem 0 0; }
+.technical-details .technical-values { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem 1.1rem; }
 .technical-details dl div { display: flex; justify-content: space-between; gap: 1rem; font-size: .72rem; }
 .technical-details dt { color: #71858c; }
 .technical-details dd { margin: 0; font-weight: 750; }
 .load-distribution-title { margin: .9rem 0 .3rem; color: #264b58; font-size: .76rem; }
-.technical-details .load-distribution { margin-top: .4rem; }
+.technical-details .load-distribution { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: .4rem; gap: .55rem 1.1rem; }
 .parameter-legend { margin-top: .9rem; padding-top: .75rem; border-top: 1px solid #dde7e9; }
 .parameter-legend h3 { margin: 0 0 .5rem; color: #264b58; font-size: .76rem; }
-.parameter-legend ul { display: grid; gap: .38rem; margin: 0; padding-left: 1rem; font-size: .7rem; line-height: 1.45; }
+.parameter-legend ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .45rem 1.4rem; margin: 0; padding-left: 1rem; font-size: .7rem; line-height: 1.45; }
 .parameter-legend strong { color: #264b58; }
 .workspace-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); gap: 1rem; max-width: 1440px; margin: 1rem auto; align-items: start; }
 .control-card, .participants-card, .activity-card { padding: 1.2rem; }
@@ -278,11 +279,9 @@ a { color: inherit; text-decoration: none; }
   .home-content { grid-template-columns: 1fr; gap: 2.5rem; align-content: center; }
   .home-intro h1 { font-size: clamp(2.7rem, 8vw, 4.8rem); }
   .role-grid { grid-template-columns: 1fr 1fr; }
-  .simulator-grid { grid-template-columns: 1fr; }
-  .metrics-panel { display: grid; grid-template-columns: .8fr 1.5fr; align-items: start; }
   .metric-grid { grid-template-columns: repeat(3, 1fr); }
   .metric-card:last-child { grid-column: auto; }
-  .technical-details { grid-column: 1 / -1; }
+  .technical-details .technical-values, .parameter-legend ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workspace-grid { grid-template-columns: 1fr; }
 }
 
@@ -313,6 +312,8 @@ a { color: inherit; text-decoration: none; }
   .metrics-panel { display: flex; }
   .metric-grid { grid-template-columns: 1fr 1fr; }
   .metric-card:last-child { grid-column: 1 / -1; }
+  .technical-details .technical-values, .parameter-legend ul { grid-template-columns: 1fr; }
+  .technical-details .load-distribution { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .control-row, .classroom-side-column { grid-template-columns: 1fr; }
   .teacher-actions { align-items: stretch; flex-direction: column; }
   .teacher-buttons { display: grid; grid-template-columns: 1fr 1fr; }
@@ -321,8 +322,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 430px) {
-  .side-selector, .metric-grid, .teacher-buttons { grid-template-columns: 1fr; }
-  .metric-card:last-child { grid-column: auto; }
+  .side-selector, .teacher-buttons { grid-template-columns: 1fr; }
   .home-intro h1 { font-size: 2.7rem; }
   .role-card { padding: 1.35rem; }
 }

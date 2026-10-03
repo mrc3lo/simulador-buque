@@ -47,7 +47,7 @@ export function MetricsPanel({ metrics }: { metrics: ShipMetrics }) {
 
       <details className="technical-details">
         <summary>Parámetros de Flotabilidad y Estabilidad</summary>
-        <dl>
+        <dl className="technical-values">
           <div><dt>Desplazamiento (Δ)</dt><dd>{tons(metrics.totalMassKg)}</dd></div>
           <div><dt>Volumen desplazado (∇)</dt><dd>{metrics.displacedVolumeM3.toFixed(2)} m³</dd></div>
           <div><dt>Volumen requerido para flotar</dt><dd>{metrics.requiredDisplacedVolumeM3.toFixed(2)} m³</dd></div>
