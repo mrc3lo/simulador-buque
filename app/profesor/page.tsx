@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createRoom, recoverTeacher, getTeacherAccount, loginTeacher, logoutTeacher } from "@/lib/client-api";
+import { playShipHorn } from "@/lib/ship-sound";
 import { readLocalStorage, writeLocalStorage } from "@/hooks/use-local-storage";
 import type { SessionIdentity, TeacherAccount } from "@/lib/types";
 
@@ -97,6 +98,7 @@ function CreateRoomForm({ onSuccess }: { onSuccess: (identity: SessionIdentity) 
     setError(null);
     try {
       const result = await createRoom({ title, teacherName, pin });
+      void playShipHorn();
       onSuccess(result.identity);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "No se pudo crear la sala.");

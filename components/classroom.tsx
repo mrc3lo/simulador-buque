@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, Clipboard, LogOut, Radio, Users } from "lucide-react";
+import { Check, Clipboard, LogOut, Radio, Users, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ActivityLog } from "@/components/activity-log";
 import { ConnectionBadge } from "@/components/connection-badge";
@@ -12,6 +12,7 @@ import { ShipCanvas } from "@/components/ship-canvas";
 import { TeacherActions } from "@/components/teacher-actions";
 import { useRoomSession } from "@/hooks/use-room-session";
 import { calculateShipMetrics } from "@/lib/physics";
+import { playShipHorn } from "@/lib/ship-sound";
 import type { SessionIdentity } from "@/lib/types";
 
 export function Classroom({
@@ -53,6 +54,7 @@ export function Classroom({
         </div>
         <div className="header-actions">
           <ConnectionBadge state={connection} />
+          <Button variant="ghost" size="sm" title="Reproducir bocina del buque" aria-label="Reproducir bocina del buque" onClick={() => void playShipHorn()}><Volume2 /><span>Bocina</span></Button>
           <Button variant="ghost" size="sm" onClick={onLeave}><LogOut /> Salir</Button>
         </div>
       </header>

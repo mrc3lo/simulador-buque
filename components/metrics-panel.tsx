@@ -35,18 +35,21 @@ export function MetricsPanel({ metrics }: { metrics: ShipMetrics }) {
         </div>
       </div>
 
-      <div className="metric-grid">
-        {metricsList.map(({ label, value, icon: Icon }) => (
-          <article className="metric-card" key={label}>
-            <Icon aria-hidden="true" />
-            <span>{label}</span>
-            <strong>{value}</strong>
-          </article>
-        ))}
-      </div>
+      <section className="metric-overview" aria-labelledby="main-metrics-title">
+        <h2 id="main-metrics-title">Datos principales</h2>
+        <div className="metric-grid">
+          {metricsList.map(({ label, value, icon: Icon }) => (
+            <article className="metric-card" key={label}>
+              <Icon aria-hidden="true" />
+              <span>{label}</span>
+              <strong>{value}</strong>
+            </article>
+          ))}
+        </div>
+      </section>
 
-      <details className="technical-details">
-        <summary>Parámetros de Flotabilidad y Estabilidad</summary>
+      <section className="technical-details" aria-labelledby="technical-details-title">
+        <h2 id="technical-details-title">Parámetros de Flotabilidad y Estabilidad</h2>
         <dl className="technical-values">
           <div><dt>Desplazamiento (Δ)</dt><dd>{tons(metrics.totalMassKg)}</dd></div>
           <div><dt>Volumen desplazado (∇)</dt><dd>{metrics.displacedVolumeM3.toFixed(2)} m³</dd></div>
@@ -72,8 +75,8 @@ export function MetricsPanel({ metrics }: { metrics: ShipMetrics }) {
             return <div key={label}><dt>{label}</dt><dd>{tons(massKg)}</dd></div>;
           })}
         </dl>
-        <div className="parameter-legend">
-          <h3>Leyenda de variables</h3>
+        <details className="parameter-legend">
+          <summary>Leyenda didáctica de variables</summary>
           <ul>
             <li><strong>Δ:</strong> desplazamiento, masa total equivalente al agua desplazada.</li>
             <li><strong>∇:</strong> volumen de agua desplazado por el casco.</li>
@@ -87,8 +90,8 @@ export function MetricsPanel({ metrics }: { metrics: ShipMetrics }) {
             <li><strong>GM:</strong> altura metacéntrica (KM − KG); indica la estabilidad inicial.</li>
             <li><strong>yG:</strong> desplazamiento transversal del centro de gravedad desde la línea central.</li>
           </ul>
-        </div>
-      </details>
+        </details>
+      </section>
     </section>
   );
 }
