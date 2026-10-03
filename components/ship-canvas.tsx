@@ -133,7 +133,9 @@ function makeSketch(
 
     p.push();
     p.translate(0, -25 + draftVisual, 0);
-    p.rotateX(metrics.heelRadians);
+    // The canvas Y axis points down, so invert the physical heel angle here:
+    // a port-side load must lower the port side of the hull in the view.
+    p.rotateX(-metrics.heelRadians);
     drawHull(p);
 
     p.push();
