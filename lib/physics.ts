@@ -4,6 +4,7 @@ export const SHIP = {
   lengthM: 40,
   beamM: 12,
   initialDraftM: 2,
+  maxDraftM: 5,
   seawaterDensityKgM3: 1025,
   emptyKgM: 2.5,
   firstContainerKgM: 4.5,
@@ -20,6 +21,12 @@ export interface ShipMetrics {
   cargoMassKg: number;
   totalMassKg: number;
   displacedVolumeM3: number;
+  requiredDisplacedVolumeM3: number;
+  maxDisplacedVolumeM3: number;
+  averageDensityKgM3: number;
+  maxBuoyantForceN: number;
+  weightForceN: number;
+  floats: boolean;
   draftM: number;
   kgM: number;
   kbM: number;
@@ -80,9 +87,17 @@ export function calculateShipMetrics(loads: CargoLoad[]): ShipMetrics {
   const totalMassKg = EMPTY_SHIP_MASS_KG + cargoMassKg;
   const kgM = verticalMomentKgM / totalMassKg;
   const transverseGM = transverseMomentKgM / totalMassKg;
-  const displacedVolumeM3 = totalMassKg / SHIP.seawaterDensityKgM3;
-  const draftM = displacedVolumeM3 / (SHIP.lengthM * SHIP.beamM);
-  const kbM = draftM / 2;
+  const requiredDisplacedVolumeM3 = totalMassKg / SHIP.seawaterDensityKgM3;
+  const maxDisplacedVolumeM3 = SHIP.lengthM * SHIP.beamM * SHIP.maxDraftM;
+  const displacedVolumeM3 = Math.min(requiredDisplacedVolumeM3, maxDisplacedVolumeM3);
+  const averageDensityKgM3 = totalMassKg / maxDisplacedVolumeM3;
+  const gravityMps2 = 9.81;
+  const maxBuoyantForceN = maxDisplacedVolumeM3 * SHIP.seawaterDensityKgM3 * gravityMps2;
+  const weightForceN = totalMassKg * gravityMps2;
+  const floats = weightForceN <= maxBuoyantForceN;
+  const draftM = requiredDisplacedVolumeM3 / (SHIP.lengthM * SHIP.beamM);
+  const immersedDraftM = displacedVolumeM3 / (SHIP.lengthM * SHIP.beamM);
+  const kbM = immersedDraftM / 2;
   const waterplaneInertiaM4 =
     (SHIP.lengthM * Math.pow(SHIP.beamM, 3)) / 12;
   const bmM = waterplaneInertiaM4 / displacedVolumeM3;
@@ -97,6 +112,12 @@ export function calculateShipMetrics(loads: CargoLoad[]): ShipMetrics {
     cargoMassKg,
     totalMassKg,
     displacedVolumeM3,
+    requiredDisplacedVolumeM3,
+    maxDisplacedVolumeM3,
+    averageDensityKgM3,
+    maxBuoyantForceN,
+    weightForceN,
+    floats,
     draftM,
     kgM,
     kbM,

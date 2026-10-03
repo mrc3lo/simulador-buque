@@ -85,7 +85,7 @@ export default function TeacherPage() {
 }
 
 function CreateRoomForm({ onSuccess }: { onSuccess: (identity: SessionIdentity) => void }) {
-  const [title, setTitle] = useState("Taller de estabilidad y flotabilidad de un Buque con carga");
+  const [title, setTitle] = useState("Taller de Flotabilidad y Estabilidad de un buque con carga");
   const [teacherName, setTeacherName] = useState("");
   const [pin, setPin] = useState("");
   const [busy, setBusy] = useState(false);
