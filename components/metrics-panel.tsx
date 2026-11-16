@@ -23,20 +23,44 @@ export function MetricsPanel({ metrics }: { metrics: ShipMetrics }) {
   return (
     <section className="metrics-panel" aria-label="Resultados de estabilidad">
       <div className={`stability-banner ${metrics.stable ? "is-stable" : "is-unstable"}`}>
-        <span className="status-orb" />
-        <div>
-          <span>Estado del buque</span>
-          <strong>{metrics.stable ? "ESTABLE" : "INESTABLE"}</strong>
+        <div className="status-main">
+          <span className="status-orb" />
+          <div className="status-copy">
+            <span>Estado del buque</span>
+            <strong>{metrics.stable ? "ESTABLE" : "INESTABLE"}</strong>
+          </div>
         </div>
+
         <div className={`buoyancy-status ${metrics.floats ? "is-floating" : "is-sinking"}`}>
-          <span>Flotabilidad según Arquímedes</span>
-          <strong>{metrics.floats ? "FLOTA" : "SE HUNDE"}</strong>
-          <small>
-            {metrics.floats
-              ? `Cuando la densidad del buque (${metrics.averageDensityKgM3.toFixed(1)} kg/m³) es menor que la densidad del agua (${SHIP.seawaterDensityKgM3} kg/m³), el buque flota.`
-              : `Cuando la densidad del buque (${metrics.averageDensityKgM3.toFixed(1)} kg/m³) es mayor o igual a la densidad del agua (${SHIP.seawaterDensityKgM3} kg/m³), el buque se hunde.`}
-          </small>
-          <small>Empuje máx. {`${(metrics.maxBuoyantForceN / 1_000_000).toFixed(2)} MN`} {metrics.floats ? "≥" : "<"} peso {`${(metrics.weightForceN / 1_000_000).toFixed(2)} MN`}</small>
+          <div className="buoyancy-status-header">
+            <span>Flotabilidad según Arquímedes</span>
+            <strong className="buoyancy-badge">{metrics.floats ? "FLOTA" : "SE HUNDE"}</strong>
+          </div>
+          <div className="buoyancy-conditions">
+            <small>
+              <span className="condition-bullet">•</span>
+              <span>
+                {metrics.floats
+                  ? `Cuando la densidad del buque (${metrics.averageDensityKgM3.toFixed(1)} kg/m³) es menor que la densidad del agua (${SHIP.seawaterDensityKgM3} kg/m³), el buque flota.`
+                  : `Cuando la densidad del buque (${metrics.averageDensityKgM3.toFixed(1)} kg/m³) es mayor o igual a la densidad del agua (${SHIP.seawaterDensityKgM3} kg/m³), el buque se hunde.`}
+              </span>
+            </small>
+            <small>
+              <span className="condition-bullet">•</span>
+              <span>
+                Empuje máx. {`${(metrics.maxBuoyantForceN / 1_000_000).toFixed(2)} MN`}{" "}
+                {metrics.floats ? "≥" : "<"} peso {`${(metrics.weightForceN / 1_000_000).toFixed(2)} MN`}
+              </span>
+            </small>
+            <small>
+              <span className="condition-bullet">•</span>
+              <span>
+                {metrics.stable
+                  ? `Si GM > 0 es estable con GM = KM − KG (${metrics.kmM.toFixed(2)} m − ${metrics.kgM.toFixed(2)} m = ${metrics.gmM.toFixed(2)} m > 0).`
+                  : `Si GM ≤ 0 es inestable con GM = KM − KG (${metrics.kmM.toFixed(2)} m − ${metrics.kgM.toFixed(2)} m = ${metrics.gmM.toFixed(2)} m ≤ 0).`}
+              </span>
+            </small>
+          </div>
         </div>
       </div>
 
