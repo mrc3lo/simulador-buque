@@ -31,6 +31,11 @@ export function MetricsPanel({ metrics }: { metrics: ShipMetrics }) {
         <div className={`buoyancy-status ${metrics.floats ? "is-floating" : "is-sinking"}`}>
           <span>Flotabilidad según Arquímedes</span>
           <strong>{metrics.floats ? "FLOTA" : "SE HUNDE"}</strong>
+          <small>
+            {metrics.floats
+              ? `Cuando la densidad del buque (${metrics.averageDensityKgM3.toFixed(1)} kg/m³) es menor que la densidad del agua (${SHIP.seawaterDensityKgM3} kg/m³), el buque flota.`
+              : `Cuando la densidad del buque (${metrics.averageDensityKgM3.toFixed(1)} kg/m³) es mayor o igual a la densidad del agua (${SHIP.seawaterDensityKgM3} kg/m³), el buque se hunde.`}
+          </small>
           <small>Empuje máx. {`${(metrics.maxBuoyantForceN / 1_000_000).toFixed(2)} MN`} {metrics.floats ? "≥" : "<"} peso {`${(metrics.weightForceN / 1_000_000).toFixed(2)} MN`}</small>
         </div>
       </div>
